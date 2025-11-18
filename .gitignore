@@ -1,1 +1,7 @@
 .idea/
+.env
+.next/
+node_modules/
+.venv
+_pycache_/
+__pycache__/
