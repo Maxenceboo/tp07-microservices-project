@@ -1,40 +1,122 @@
-import { serverApi } from '@/lib/api'
-import { getAccessToken } from '@/lib/auth'
+'use client'
 
-export default async function Dashboard() {
-    const api = serverApi()
-    const token = await getAccessToken()
+import { useEffect, useState } from 'react'
 
-    const hasToken = Boolean(token)
-    let tokenSent = false
-    let orders: any[] = []
+interface Order {
+    id: number
+    user: string
+    item: string
+    createdAt: string
+}
 
-    try {
-        const headers: Record<string, string> = { 'x-ssr': '1' }
+/**
+ * Dashboard utilisateur interactif :
+ * - récupère les commandes
+ * - permet de créer une commande
+ * - permet de supprimer une commande
+ */
+export default function Dashboard() {
+    const [orders, setOrders] = useState<Order[]>([])
+    const [newItem, setNewItem] = useState('')
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState('')
+    const [creating, setCreating] = useState(false)
 
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`
-            tokenSent = true
+    // Charger les commandes de l'utilisateur
+    const loadOrders = async () => {
+        try {
+            const res = await fetch('/api/orders')
+            if (!res.ok) throw new Error('fetch failed')
+            const data = await res.json()
+            setOrders(data)
+            setLoading(false)
+        } catch {
+            setError('Impossible de charger les commandes')
+            setLoading(false)
         }
-
-        orders = await api.get('/orders', {
-            headers,
-            cache: 'no-store',
-        })
-    } catch {
-        orders = []
     }
 
+    useEffect(() => {
+        loadOrders()
+    }, [])
+
+    // Créer une commande
+    const createOrder = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!newItem.trim()) return
+
+        setCreating(true)
+        const res = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ item: newItem }),
+        })
+        setCreating(false)
+
+        if (res.ok) {
+            setNewItem('')
+            loadOrders()
+        } else {
+            alert('Erreur lors de la création')
+        }
+    }
+
+    // Supprimer une commande
+    const deleteOrder = async (id: number) => {
+        if (!confirm('Supprimer cette commande ?')) return
+
+        const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' })
+        if (res.ok) loadOrders()
+        else alert('Erreur de suppression')
+    }
+
+    if (loading) return <p className="p-6 text-gray-600">Chargement…</p>
+    if (error) return <p className="p-6 text-red-600">{error}</p>
+
     return (
-        <main style={{ maxWidth: 800, margin: '2rem auto', fontFamily: 'system-ui' }}>
-            <h1>Dashboard</h1>
+        <main className="max-w-2xl mx-auto py-10 px-6">
+            <h1 className="text-2xl font-bold mb-6">📦 Mes commandes</h1>
 
-            <div style={{ margin: '1rem 0', padding: '1rem', border: '1px solid #ddd' }}>
-                <p><strong>Access Token présent :</strong> {hasToken ? 'Oui' : 'Non'}</p>
-                <p><strong>Token envoyé :</strong> {tokenSent ? 'Oui' : 'Non'}</p>
-            </div>
+            {/* Formulaire de création */}
+            <form onSubmit={createOrder} className="flex items-center gap-2 mb-8">
+                <input type="text"
+                       placeholder="Nom du produit…"
+                       value={newItem}
+                       onChange={(e) => setNewItem(e.target.value)}
+                       className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+                />
+                <button type="submit"
+                        disabled={creating}
+                        className="bg-blue-600 text-white rounded-lg px-4 py-2 hover:bg-blue-700 disabled:opacity-50"
+                >
+                    {creating ? 'Ajout…' : 'Ajouter'}
+                </button>
+            </form>
 
-            <pre>{JSON.stringify(orders, null, 2)}</pre>
+            {/* Liste des commandes */}
+            {orders.length === 0 ? (
+                <p className="text-gray-500">Aucune commande pour le moment.</p>
+            ) : (
+                <ul className="space-y-3">
+                    {orders.map((o) => (
+                        <li key={o.id}
+                            className="flex justify-between items-center border border-gray-200 rounded-xl px-4 py-3 shadow-sm"
+                        >
+                            <div>
+                                <p className="font-medium text-gray-800">{o.item}</p>
+                                <p className="text-sm text-gray-500">
+                                    Commandé le {new Date(o.createdAt).toLocaleString()}
+                                </p>
+                            </div>
+                            <button onClick={() => deleteOrder(o.id)}
+                                    className="text-sm text-red-600 hover:text-red-800"
+                            >
+                                Supprimer
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            )}
         </main>
     )
 }
