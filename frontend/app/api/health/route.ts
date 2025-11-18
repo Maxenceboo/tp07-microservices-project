@@ -10,3 +10,4 @@ export async function GET() {
         service: 'frontend-gateway',
     })
 }
+

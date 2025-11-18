@@ -33,17 +33,15 @@ export async function POST(request: Request) {
 
         const { access_token, refresh_token, expires_in } = await r.json()
 
-        // Dépôt du access_token en httpOnly
         cookieStore.set({
             name: 'access_token',
             value: access_token,
             httpOnly: true,
             sameSite: 'lax',
             path: '/',
-            maxAge: expires_in || 3600, // 1 heure par défaut
+            maxAge: expires_in || 3600,
         })
 
-        // Dépôt du refresh_token si présent
         if (refresh_token) {
             cookieStore.set({
                 name: 'refresh_token',
@@ -51,7 +49,7 @@ export async function POST(request: Request) {
                 httpOnly: true,
                 sameSite: 'lax',
                 path: '/',
-                maxAge: 60 * 60 * 24 * 7, // 7 jours
+                maxAge: 60 * 60 * 24 * 7,
             })
         }
 
@@ -60,3 +58,4 @@ export async function POST(request: Request) {
         return Response.json({ detail: 'login failed' }, { status: 500 })
     }
 }
+
