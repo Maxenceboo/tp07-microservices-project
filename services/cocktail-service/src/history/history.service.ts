@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class HistoryService {
-    private prisma = new PrismaClient();
+    private readonly prisma = new PrismaClient();
 
     async recordAction(
         userId: string,
