@@ -1,0 +1,36 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: devops-ingress
+  namespace: default
+spec:
+  rules:
+    - host: devops.local
+      http:
+        paths:
+          # 1) Auth-service : /auth → FastAPI
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-service
+                port:
+                  number: 8000
+
+          # 2) Order-service : /orders → NestJS
+          - path: /orders
+            pathType: Prefix
+            backend:
+              service:
+                name: order-service
+                port:
+                  number: 4000
+
+          # 3) Frontend : tout le reste → Next.js
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 3000
