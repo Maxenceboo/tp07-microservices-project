@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cocktail-postgres
+  labels:
+    app: cocktail-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cocktail-postgres
+  template:
+    metadata:
+      labels:
+        app: cocktail-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: "user"
+            - name: POSTGRES_PASSWORD
+              value: "password"
+            - name: POSTGRES_DB
+              value: "cocktail_db"
+          # Pour un usage démo/dev on peut rester en stockage éphémère
+          # Pour de la prod, il faudrait un PersistentVolumeClaim.
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cocktail-postgres
+spec:
+  selector:
+    app: cocktail-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+  type: ClusterIP
+
