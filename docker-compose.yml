@@ -1,6 +1,3 @@
-  order_db_data:
-  cocktail_db_data:
-
 services:
   auth-service:
     build:
@@ -33,7 +30,7 @@ services:
       context: ./services/cocktail-service
     container_name: cocktail-service
     ports:
-      - "3001:3000"
+      - "3001:3001"
     env_file:
       - ./services/cocktail-service/.env
     environment:
@@ -74,4 +71,3 @@ volumes:
   auth_db_data:
   order_db_data:
   cocktail_db_data:
-

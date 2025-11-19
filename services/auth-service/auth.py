@@ -5,17 +5,23 @@ Routes d'authentification du service :
 - /refresh  : renouvellement de l'access token via un refresh token
 """
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlmodel import Session, select
 
 from models import User
 from db import get_session
-from security import (
-    create_token,
-    verify_password,
-    hash_password,
-    decode_token,
-)
+from security import create_token, verify_password, hash_password, decode_token
+
+
+class AuthRequest(BaseModel):
+    username: str
+    password: str
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
 
 router = APIRouter()
 
@@ -24,7 +30,7 @@ router = APIRouter()
 # 🟦 Register : création d’un utilisateur
 # ---------------------------------------------------------------------
 @router.post("/register")
-async def register(request: Request, session: Session = Depends(get_session)):
+async def register(payload: AuthRequest, session: Session = Depends(get_session)):
     """
     Création d'un utilisateur à partir d’un JSON :
     {
@@ -33,10 +39,8 @@ async def register(request: Request, session: Session = Depends(get_session)):
     }
     """
 
-    # Récupération des données envoyées
-    data = await request.json()
-    username = data.get("username")
-    password = data.get("password")
+    username = payload.username
+    password = payload.password
 
     # Vérification minimale
     if not username or not password:
@@ -66,7 +70,7 @@ async def register(request: Request, session: Session = Depends(get_session)):
 # 🟦 Login : authentification + création des tokens
 # ---------------------------------------------------------------------
 @router.post("/login")
-async def login(request: Request, session: Session = Depends(get_session)):
+async def login(payload: AuthRequest, session: Session = Depends(get_session)):
     """
     Authentifie un utilisateur via un JSON :
     {
@@ -79,9 +83,8 @@ async def login(request: Request, session: Session = Depends(get_session)):
     - refresh_token  (valide 30 jours par défaut)
     """
 
-    data = await request.json()
-    username = data.get("username")
-    password = data.get("password")
+    username = payload.username
+    password = payload.password
 
     if not username or not password:
         raise HTTPException(status_code=400, detail="Missing username or password")
@@ -111,7 +114,7 @@ async def login(request: Request, session: Session = Depends(get_session)):
 # 🟦 Refresh : renouvellement du token d'accès
 # ---------------------------------------------------------------------
 @router.post("/refresh")
-async def refresh(request: Request):
+async def refresh(payload: RefreshRequest):
     """
     Échange un refresh token contre un nouvel access token.
     Attend un JSON :
@@ -120,10 +123,9 @@ async def refresh(request: Request):
     }
     """
 
-    data = await request.json()
-    refresh_token = data.get("refresh_token")
+    refresh_token = payload.refresh_token
 
-    if not refresh_token:
+    if refresh_token is None:
         raise HTTPException(status_code=400, detail="Missing refresh_token")
 
     try:
