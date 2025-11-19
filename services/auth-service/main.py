@@ -48,6 +48,14 @@ def on_startup():
     """
     init_db()
 
+@app.get("/health", tags=["health"])
+def health():
+    """
+    Endpoint de santé pour vérifier que le service est opérationnel.
+    Utile pour les outils d'orchestration (Kubernetes, Docker Swarm, etc.).
+    """
+    return {"status": "ok"}
+
 
 # ---------------------------------------------------------------------------
 # Déclaration des routes

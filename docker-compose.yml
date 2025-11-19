@@ -1,0 +1,44 @@
+services:
+  auth-service:
+    build:
+      context: ./services/auth-service
+    container_name: auth-service
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./services/auth-service/.env
+    volumes:
+      - auth_db_data:/app/db
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./services/order-service
+    container_name: order-service
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./services/order-service/.env
+    volumes:
+      - order_db_data:/app/prisma
+    depends_on:
+      - auth-service
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - auth-service
+      - order-service
+    restart: unless-stopped
+
+volumes:
+  auth_db_data:
+  order_db_data:
+

@@ -1,0 +1,3 @@
+docker build -t auth-service:dev ./service/auth-service
+docker build -t order-service:dev ./service/order-service
+docker build -t frontend:dev ./frontend
