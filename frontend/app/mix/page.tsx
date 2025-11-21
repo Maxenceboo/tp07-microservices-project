@@ -131,12 +131,20 @@ export default function CocktailsPage() {
               Like/Dislike pour créer ta liste. On évite de te reproposer ceux déjà notés.
             </p>
           </div>
-          <a
-            href="/dashboard"
-            className="text-sm text-indigo-200 hover:text-white underline underline-offset-4"
-          >
-            Retour au dashboard
-          </a>
+          <div className="flex flex-col items-end gap-2 text-sm">
+            <a
+              href="/dashboard"
+              className="text-indigo-200 hover:text-white underline underline-offset-4"
+            >
+              Retour au dashboard
+            </a>
+            <a
+              href="/history"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition"
+            >
+              Voir l’historique
+            </a>
+          </div>
         </header>
 
         {authError && (
