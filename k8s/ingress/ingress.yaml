@@ -26,6 +26,14 @@ spec:
                 port:
                   number: 4000
 
+          - path: /cocktail
+            pathType: Prefix
+            backend:
+              service:
+                name: cocktail-service
+                port:
+                  number: 3001
+
           # 3) Frontend : tout le reste → Next.js
           - path: /
             pathType: Prefix

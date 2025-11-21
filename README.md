@@ -79,8 +79,8 @@ docker push destryke/auth-service:latest
 **Order Service**
 
 ```bash
-docker build -t destyke/order-service:latest ./services/order-service
-docker push destyke/order-service:latest
+docker build -t destryke/order-service:latest ./services/order-service
+docker push destryke/order-service:latest
 ```
 
 **Cocktail Service**
@@ -93,8 +93,8 @@ docker push destryke/cocktail-service:latest
 **Frontend**
 
 ```bash
-docker build -t destyke/frontend:latest ./frontend
-docker push destyke/frontend:latest
+docker build -t destryke/frontend:latest ./frontend
+docker push destryke/frontend:latest
 ```
 
 ### 2. Démarrage de l'infrastructure Kubernetes
