@@ -19,6 +19,9 @@ spec:
           image: destryke/auth-service:latest
           ports:
             - containerPort: 8000
+          env:
+            - name: JWT_SECRET
+              value: "change-me"
 
           # Vérifie régulièrement si le service fonctionne
           livenessProbe:
