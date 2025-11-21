@@ -144,6 +144,12 @@ export default function CocktailsPage() {
             >
               Voir l’historique
             </a>
+            <a
+              href="/search"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600/80 border border-white/20 text-white hover:bg-indigo-500 transition"
+            >
+              Rechercher un cocktail
+            </a>
           </div>
         </header>
 

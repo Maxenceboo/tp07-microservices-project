@@ -201,12 +201,20 @@ export default function HistoryPage() {
               Un aperçu rapide. Clique pour voir plus de détails.
             </p>
           </div>
-          <a
-            href="/mix"
-            className="text-sm text-indigo-200 hover:text-white underline underline-offset-4"
-          >
-            Retour aux cocktails
-          </a>
+          <div className="flex flex-col items-end gap-2 text-sm">
+            <a
+              href="/mix"
+              className="text-indigo-200 hover:text-white underline underline-offset-4"
+            >
+              Retour aux cocktails
+            </a>
+            <a
+              href="/search"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600/80 border border-white/20 text-white hover:bg-indigo-500 transition"
+            >
+              Rechercher un cocktail
+            </a>
+          </div>
         </header>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 grid md:grid-cols-3 gap-3 text-sm">
