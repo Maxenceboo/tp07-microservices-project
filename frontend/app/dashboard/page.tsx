@@ -75,7 +75,15 @@ export default function Dashboard() {
 
     return (
         <main className="max-w-2xl mx-auto py-10 px-6">
-            <h1 className="text-2xl font-bold mb-6">📦 Mes commandes</h1>
+            <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl font-bold">📦 Mes commandes</h1>
+                <a
+                    href="/mix"
+                    className="text-sm text-blue-600 hover:text-blue-800 underline underline-offset-4"
+                >
+                    Découvrir des cocktails
+                </a>
+            </div>
 
             {/* Formulaire de création */}
             <form onSubmit={createOrder} className="flex items-center gap-2 mb-8">

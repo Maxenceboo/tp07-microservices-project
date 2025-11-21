@@ -16,4 +16,6 @@ RUN npm run build
 
 EXPOSE 3001
 
-CMD ["npm", "run", "start:prod"]
+# Pousse le schéma Prisma (crée la table cocktail_history) puis démarre.
+# En prod, remplacer par `prisma migrate deploy` si des migrations sont gérées.
+CMD ["sh", "-c", "npx prisma db push && npm run start:prod"]

@@ -57,6 +57,8 @@ Services exposés (Docker Compose) :
 - Cocktail Service : `http://localhost:3001/api`
 - Frontend : `http://localhost:3000`
 
+Frontend : après connexion, accès aux commandes (`/dashboard`) et à la page cocktails (`/mix`) pour liker/disliker des suggestions (déduplication des cocktails déjà notés côté UI).
+
 Flux d’auth (local) :
 1. Créer un utilisateur via `POST /auth/register` sur `http://localhost:8000/docs`
 2. Récupérer un `access_token` via `POST /auth/login`

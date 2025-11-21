@@ -15,7 +15,7 @@ export async function POST(request: Request) {
         const { username, password } = body
 
         const r = await fetch(
-            `${process.env.AUTH_SERVICE_URL || 'http://localhost:8000'}/auth/login`,
+            `${process.env.AUTH_SERVICE_URL || 'http://localhost:8000'}/auth/auth/login`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
