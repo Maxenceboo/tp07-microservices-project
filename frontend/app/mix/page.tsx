@@ -121,8 +121,25 @@ export default function CocktailsPage() {
   const ingredients = extractIngredients(cocktail)
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white px-6 py-10">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white px-6 py-10">
+      <div className="max-w-5xl mx-auto space-y-6">
+        <nav className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex items-center justify-between text-sm text-slate-200">
+          <div className="flex items-center gap-3">
+            <a href="/dashboard" className="hover:text-white">
+              Dashboard
+            </a>
+            <span className="text-white font-semibold">Mix</span>
+            <a href="/search" className="hover:text-white">
+              Recherche
+            </a>
+            <a href="/history" className="hover:text-white">
+              Historique
+            </a>
+          </div>
+          <a href="/" className="text-xs underline text-indigo-200 hover:text-white">
+            Déconnexion
+          </a>
+        </nav>
         <header className="flex items-center justify-between">
           <div>
             <p className="text-sm uppercase tracking-wide text-indigo-300">Mix & Match</p>
@@ -130,26 +147,6 @@ export default function CocktailsPage() {
             <p className="text-slate-300">
               Like/Dislike pour créer ta liste. On évite de te reproposer ceux déjà notés.
             </p>
-          </div>
-          <div className="flex flex-col items-end gap-2 text-sm">
-            <a
-              href="/dashboard"
-              className="text-indigo-200 hover:text-white underline underline-offset-4"
-            >
-              Retour au dashboard
-            </a>
-            <a
-              href="/history"
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 border border-white/20 text-white hover:bg-white/20 transition"
-            >
-              Voir l’historique
-            </a>
-            <a
-              href="/search"
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-indigo-600/80 border border-white/20 text-white hover:bg-indigo-500 transition"
-            >
-              Rechercher un cocktail
-            </a>
           </div>
         </header>
 

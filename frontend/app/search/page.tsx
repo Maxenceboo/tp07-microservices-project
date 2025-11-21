@@ -126,6 +126,23 @@ export default function SearchPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white px-6 py-10">
       <div className="max-w-5xl mx-auto space-y-8">
+        <nav className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex items-center justify-between text-sm text-slate-200">
+          <div className="flex items-center gap-3">
+            <a href="/dashboard" className="hover:text-white">
+              Dashboard
+            </a>
+            <a href="/mix" className="hover:text-white">
+              Mix
+            </a>
+            <span className="text-white font-semibold">Recherche</span>
+            <a href="/history" className="hover:text-white">
+              Historique
+            </a>
+          </div>
+          <a href="/" className="text-xs underline text-indigo-200 hover:text-white">
+            Déconnexion
+          </a>
+        </nav>
         <header className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-indigo-300">

@@ -36,6 +36,9 @@ export default function HistoryPage() {
   const [error, setError] = useState('')
   const [authError, setAuthError] = useState('')
   const [loadingDetails, setLoadingDetails] = useState<Record<string, boolean>>({})
+  const [categories, setCategories] = useState<string[]>([])
+  const [glasses, setGlasses] = useState<string[]>([])
+  const [alcoholicOpts, setAlcoholic] = useState<string[]>([])
   const [actionFilter, setActionFilter] = useState<'all' | 'like' | 'dislike'>(
     'all'
   )
@@ -43,6 +46,8 @@ export default function HistoryPage() {
     'all'
   )
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
+  const [glassFilter, setGlassFilter] = useState<string>('all')
+  const [alcoholicFilter, setAlcoholicFilter] = useState<string>('all')
 
   const sortedHistory = useMemo(
     () =>
@@ -53,6 +58,19 @@ export default function HistoryPage() {
   )
 
   useEffect(() => {
+    // Charge la liste des catégories (mêmes options que la page recherche)
+    const loadCategories = async () => {
+      try {
+        const res = await fetch('/api/cocktails/categories', { cache: 'no-store' })
+        if (!res.ok) return
+        const data = await res.json().catch(() => ({}))
+        if (Array.isArray(data?.categories)) setCategories(data.categories)
+        if (Array.isArray(data?.glasses)) setGlasses(data.glasses)
+        if (Array.isArray(data?.alcoholic)) setAlcoholic(data.alcoholic)
+      } catch {
+        /* ignore */
+      }
+    }
     const loadHistory = async () => {
       setLoading(true)
       setError('')
@@ -90,6 +108,7 @@ export default function HistoryPage() {
       }
     }
 
+    loadCategories()
     loadHistory()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionFilter, sourceFilter])
@@ -144,14 +163,10 @@ export default function HistoryPage() {
       minute: '2-digit',
     })
 
-  const categoryOptions = useMemo(() => {
-    const set = new Set<string>()
-    history.forEach((h) => {
-      const cat = details[h.cocktailId]?.strCategory
-      if (cat) set.add(cat)
-    })
-    return Array.from(set).sort()
-  }, [history, details])
+  const categoryOptions = useMemo(
+    () => (categories.length ? categories : []),
+    [categories]
+  )
 
   const filteredHistory = useMemo(
     () =>
@@ -160,9 +175,17 @@ export default function HistoryPage() {
           const cat = details[item.cocktailId]?.strCategory
           if (cat && cat !== categoryFilter) return false
         }
+        if (glassFilter !== 'all') {
+          const g = details[item.cocktailId]?.strGlass
+          if (g && g !== glassFilter) return false
+        }
+        if (alcoholicFilter !== 'all') {
+          const a = details[item.cocktailId]?.strAlcoholic
+          if (a && a !== alcoholicFilter) return false
+        }
         return true
       }),
-    [sortedHistory, categoryFilter, details]
+    [sortedHistory, categoryFilter, glassFilter, alcoholicFilter, details]
   )
 
   if (loading) {
@@ -191,6 +214,23 @@ export default function HistoryPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white px-6 py-12">
       <div className="max-w-5xl mx-auto space-y-6">
+        <nav className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3 flex items-center justify-between text-sm text-slate-200">
+          <div className="flex items-center gap-3">
+            <a href="/dashboard" className="hover:text-white">
+              Dashboard
+            </a>
+            <a href="/mix" className="hover:text-white">
+              Mix
+            </a>
+            <a href="/search" className="hover:text-white">
+              Recherche
+            </a>
+            <span className="text-white font-semibold">Historique</span>
+          </div>
+          <a href="/" className="text-xs underline text-indigo-200 hover:text-white">
+            Déconnexion
+          </a>
+        </nav>
         <header className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-indigo-300">
@@ -217,7 +257,7 @@ export default function HistoryPage() {
           </div>
         </header>
 
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 grid md:grid-cols-3 gap-3 text-sm">
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
           <label className="flex flex-col gap-1 text-slate-200">
             <span className="text-xs uppercase tracking-wide text-slate-400">
               Action
@@ -263,6 +303,35 @@ export default function HistoryPage() {
               {categoryOptions.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-2 text-slate-200">
+            <span className="text-xs uppercase tracking-wide text-slate-400">
+              Verre / Alcool
+            </span>
+            <select
+              value={glassFilter}
+              onChange={(e) => setGlassFilter(e.target.value)}
+              className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-white"
+            >
+              <option value="all">Tous les verres</option>
+              {glasses.map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
+            </select>
+            <select
+              value={alcoholicFilter}
+              onChange={(e) => setAlcoholicFilter(e.target.value)}
+              className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-white"
+            >
+              <option value="all">Tous</option>
+              {alcoholicOpts.map((a) => (
+                <option key={a} value={a}>
+                  {a}
                 </option>
               ))}
             </select>
