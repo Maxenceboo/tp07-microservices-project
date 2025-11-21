@@ -50,18 +50,26 @@ Ce repo est organisé sous forme de **monorepo** pour faciliter le rendu, la com
 docker compose up --build
 ```
 
-Services exposés :
+Services exposés (Docker Compose) :
 
-- Auth Service : `http://localhost:8000/docs`
+- Auth Service : `http://localhost:8000/docs` (OpenAPI `http://localhost:8000/openapi.json`)
 - Order Service : `http://localhost:4000`
 - Cocktail Service : `http://localhost:3001/api`
 - Frontend : `http://localhost:3000`
 
-Pour utiliser les endpoints protégés (Order/Cocktail/History) :
-
-1. Créer un utilisateur via `POST /auth/register` dans `http://localhost:8000/docs`
+Flux d’auth (local) :
+1. Créer un utilisateur via `POST /auth/register` sur `http://localhost:8000/docs`
 2. Récupérer un `access_token` via `POST /auth/login`
-3. Dans Swagger du Cocktail Service (`/api`), cliquer sur **Authorize** et coller le token (sans `Bearer `)
+3. Dans Swagger Cocktail (`/api`), **Authorize** puis coller le token (sans `Bearer `)
+
+### Particularités Kubernetes (Ingress / prefix)
+
+- L’Ingress expose les services sous :
+  - Auth : `http://devops.local/auth/docs` (OpenAPI `http://devops.local/auth/openapi.json`)
+  - Cocktail : `http://devops.local/cocktail/api`
+  - Order : `http://devops.local/orders` (selon config)
+- L’app auth est configurée avec `root_path=/auth` ; l’app cocktail a un préfixe global `/cocktail`. Les probes sont alignées sur ces chemins.
+- Utiliser la même valeur `JWT_SECRET` pour auth-service et cocktail-service (ex. `super-secret-key`).
 
 ## 🔧 Commandes de déploiement
 
@@ -108,13 +116,7 @@ minikube addons enable ingress
 
 **Déployer les services**
 
-Simple (tout d’un coup) :
-
-```bash
-kubectl apply -f k8s/
-```
-
-Ou par dossier si tu veux plus de contrôle :
+Par dossier (recommandé) :
 
 ```bash
 kubectl apply -f k8s/namespace.yaml
