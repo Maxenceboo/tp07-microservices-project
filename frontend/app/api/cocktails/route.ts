@@ -54,7 +54,8 @@ export async function POST(request: Request) {
       )
     }
 
-    const r = await fetch(`${COCKTAIL_BASE}/cocktails/history`, {
+    // History endpoints sit at /cocktail/history (global prefix + controller)
+    const r = await fetch(`${COCKTAIL_BASE}/history`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
