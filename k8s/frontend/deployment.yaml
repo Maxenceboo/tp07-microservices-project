@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: destyke/frontend:latest
+          image: destryke/frontend:latest
           ports:
             - containerPort: 3000
 
@@ -25,3 +25,5 @@ spec:
               value: "http://auth-service:8000"
             - name: ORDER_SERVICE_URL
               value: "http://order-service:4000/orders"
+            - name: COCKTAIL_SERVICE_URL
+              value: "http://cocktail-service:3001/cocktail"

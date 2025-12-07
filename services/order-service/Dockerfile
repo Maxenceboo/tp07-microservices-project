@@ -10,6 +10,9 @@ RUN npm ci
 # Copie du reste du code source
 COPY . .
 
+# Prisma a besoin d'une URL valide lors de la génération du client
+ENV DATABASE_URL="file:/app/prisma/dev.db"
+
 # Génération du client Prisma
 RUN npx prisma generate
 

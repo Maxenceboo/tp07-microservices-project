@@ -25,6 +25,34 @@ services:
       - auth-service
     restart: unless-stopped
 
+  cocktail-service:
+    build:
+      context: ./services/cocktail-service
+    container_name: cocktail-service
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./services/cocktail-service/.env
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/cocktail_db
+    depends_on:
+      - auth-service
+      - postgres
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: cocktail-postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: cocktail_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - cocktail_db_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
   frontend:
     build:
       context: ./frontend
@@ -36,9 +64,10 @@ services:
     depends_on:
       - auth-service
       - order-service
+      - cocktail-service
     restart: unless-stopped
 
 volumes:
   auth_db_data:
   order_db_data:
-
+  cocktail_db_data:

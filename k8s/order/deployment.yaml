@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: destyke/order-service:latest
+          image: destryke/order-service:latest
           ports:
             - containerPort: 4000
 
