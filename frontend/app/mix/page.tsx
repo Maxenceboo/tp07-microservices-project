@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 type Cocktail = {
   idDrink: string
@@ -31,13 +31,16 @@ export default function CocktailsPage() {
   const [cocktail, setCocktail] = useState<Cocktail | null>(null)
   const [ratedIds, setRatedIds] = useState<string[]>([])
   const ratedSet = useMemo(() => new Set(ratedIds), [ratedIds])
+  const [prefillId, setPrefillId] = useState<string | null>(null)
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [authError, setAuthError] = useState('')
   const [actionLoading, setActionLoading] = useState<'like' | 'dislike' | ''>('')
+  const requestRef = useRef(0)
 
   const loadRandom = async (attempt = 0) => {
+    const req = ++requestRef.current
     setLoading(true)
     setError('')
     setAuthError('')
@@ -67,22 +70,64 @@ export default function CocktailsPage() {
         return
       }
 
+      if (req !== requestRef.current) return
       setCocktail(data)
     } catch (e: any) {
+      if (req !== requestRef.current) return
       setCocktail(null)
       setError(e?.message || 'Erreur de chargement')
     } finally {
-      setLoading(false)
+      if (req === requestRef.current) setLoading(false)
+    }
+  }
+
+  const loadById = async (id: string) => {
+    const req = ++requestRef.current
+    setLoading(true)
+    setError('')
+    setAuthError('')
+    try {
+      const res = await fetch(`/api/cocktails/by-id?id=${encodeURIComponent(id)}`, {
+        cache: 'no-store',
+      })
+      if (res.status === 401) {
+        setCocktail(null)
+        setAuthError('Connecte-toi pour voir les cocktails.')
+        return
+      }
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.detail || 'Chargement impossible')
+      if (req !== requestRef.current) return
+      setCocktail(data || null)
+    } catch (e: any) {
+      if (req !== requestRef.current) return
+      setCocktail(null)
+      setError(e?.message || 'Erreur de chargement')
+    } finally {
+      if (req === requestRef.current) setLoading(false)
     }
   }
 
   useEffect(() => {
-    loadRandom()
+    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+    const prefill = params?.get('prefill')
+    if (prefill) {
+      setPrefillId(prefill)
+      loadById(prefill)
+    } else {
+      setPrefillId(null)
+      loadRandom()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleAction = async (action: 'like' | 'dislike') => {
     if (!cocktail) return
+
+    const isPrefilled =
+      !!prefillId ||
+      (typeof window !== 'undefined' &&
+        !!new URLSearchParams(window.location.search).get('prefill'))
 
     setActionLoading(action)
     setError('')
@@ -95,7 +140,8 @@ export default function CocktailsPage() {
         body: JSON.stringify({
           cocktailId: cocktail.idDrink,
           action,
-          source: 'tinder',
+          // Si on a un prefill (depuis search/history), on garde la provenance
+          source: isPrefilled ? 'search' : 'tinder',
         }),
       })
 
@@ -110,7 +156,9 @@ export default function CocktailsPage() {
       }
 
       setRatedIds((prev) => [...prev, cocktail.idDrink])
-      loadRandom()
+      if (!isPrefilled) {
+        loadRandom()
+      }
     } catch (e: any) {
       setError(e?.message || 'Erreur lors de l’action')
     } finally {

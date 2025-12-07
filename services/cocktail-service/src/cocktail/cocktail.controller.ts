@@ -85,4 +85,13 @@ export class CocktailController {
     async byLetter(@Query('letter') letter: string) {
         return this.cocktailService.searchByLetter(letter);
     }
+
+    @Get('by-id')
+    @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Get cocktail by id' })
+    @ApiQuery({ name: 'id', required: true })
+    @ApiResponse({ status: 200, description: 'Return cocktail details by id.' })
+    async byId(@Query('id') id: string) {
+        return this.cocktailService.getCocktailById(id);
+    }
 }

@@ -6,7 +6,9 @@ import { cookies } from 'next/headers'
  * et écrit access_token + refresh_token via cookies().
  */
 export async function POST(request: Request) {
-    console.log('http://localhost:8000/auth/login')
+    const AUTH_BASE = process.env.AUTH_SERVICE_URL || 'http://localhost:8000'
+
+    console.log(`${AUTH_BASE}/auth/login`)
 
     const cookieStore = await cookies()
 
@@ -14,14 +16,11 @@ export async function POST(request: Request) {
         const body = await request.json()
         const { username, password } = body
 
-        const r = await fetch(
-            `${process.env.AUTH_SERVICE_URL || 'http://localhost:8000'}/auth/auth/login`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password }),
-            }
-        )
+        const r = await fetch(`${AUTH_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+        })
 
         if (!r.ok) {
             const err = await r.json().catch(() => ({}))

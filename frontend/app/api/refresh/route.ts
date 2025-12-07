@@ -9,6 +9,7 @@ import { cookies } from 'next/headers'
  */
 export async function POST(request: Request) {
     const cookieStore = await cookies()
+    const AUTH_BASE = process.env.AUTH_SERVICE_URL || 'http://localhost:8000'
 
     const refresh = cookieStore.get('refresh_token')?.value
 
@@ -17,14 +18,11 @@ export async function POST(request: Request) {
     }
 
     try {
-        const r = await fetch(
-            `${process.env.AUTH_SERVICE_URL || 'http://localhost:8000'}/auth/refresh`,
-            {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ refresh_token: refresh }),
-            }
-        )
+        const r = await fetch(`${AUTH_BASE}/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: refresh }),
+        })
 
         if (!r.ok) {
             const err = await r.json().catch(() => ({}))
