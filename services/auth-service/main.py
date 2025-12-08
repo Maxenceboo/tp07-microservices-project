@@ -17,11 +17,9 @@ from jwks import router as jwks_router
 # Application FastAPI
 # ---------------------------------------------------------------------------
 # Création de l'application avec un titre (visible dans /docs et /openapi.json).
-# root_path=/auth car l'Ingress monte le service sous ce préfixe ; les routes réelles
-# restent /docs et /openapi.json côté app, mais sont exposées en /auth/... côté client.
 app = FastAPI(
     title="Auth Service",
-    root_path="/auth",
+    root_path="/",
     docs_url="/docs",
     openapi_url="/openapi.json",
 )

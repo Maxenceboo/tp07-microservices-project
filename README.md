@@ -112,7 +112,7 @@ docker push destryke/frontend:latest
 **Lancer Minikube**
 
 ```bash
-minikube start
+minikube start --driver=docker
 minikube addons enable ingress
 ```
 
