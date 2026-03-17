@@ -46,6 +46,8 @@ Ce repo est organisé sous forme de **monorepo** pour faciliter le rendu, la com
 
 ## 🧪 Lancer en local avec Docker Compose
 
+Guide detaille pour tous les modes de lancement : [docs/launch.md](docs/launch.md)
+
 ```bash
 docker compose up --build
 ```

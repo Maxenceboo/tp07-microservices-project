@@ -21,7 +21,7 @@ spec:
             - containerPort: 4000
 
           env:
-            - name: DATABASE_UR
+            - name: DATABASE_URL
               value: "file:./dev.db"
             - name: JWT_SECRET
               value: "change-me"
