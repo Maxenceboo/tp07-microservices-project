@@ -301,6 +301,50 @@ docker run --rm -p 3000:3000 --env-file .\frontend\.env tp07/frontend:test
 
 Cette methode suppose que les images sont accessibles par ton cluster, par exemple via Docker Hub ou via le daemon Docker de Minikube.
 
+### 5.0 Launcher Kubernetes (copier-coller)
+
+Commande unique pour tout lancer en local (Minikube + build + deploy + verification) :
+
+```powershell
+Set-Location 'C:\Users\maxen\IdeaProjects\tp07-microservices-project'; `
+& 'C:\Program Files\Kubernetes\Minikube\minikube.exe' start --driver=docker; `
+& 'C:\Program Files\Kubernetes\Minikube\minikube.exe' addons enable ingress; `
+docker build -t tp07-microservices-project-auth-service:latest .\services\auth-service; `
+docker build -t tp07-microservices-project-order-service:latest .\services\order-service; `
+docker build -t tp07-microservices-project-cocktail-service:latest .\services\cocktail-service; `
+docker build -t tp07-microservices-project-frontend:latest .\frontend; `
+docker tag tp07-microservices-project-auth-service:latest destryke/auth-service:latest; `
+docker tag tp07-microservices-project-order-service:latest destryke/order-service:latest; `
+docker tag tp07-microservices-project-cocktail-service:latest destryke/cocktail-service:latest; `
+docker tag tp07-microservices-project-frontend:latest destryke/frontend:latest; `
+& 'C:\Program Files\Kubernetes\Minikube\minikube.exe' image load destryke/auth-service:latest; `
+& 'C:\Program Files\Kubernetes\Minikube\minikube.exe' image load destryke/order-service:latest; `
+& 'C:\Program Files\Kubernetes\Minikube\minikube.exe' image load destryke/cocktail-service:latest; `
+& 'C:\Program Files\Kubernetes\Minikube\minikube.exe' image load destryke/frontend:latest; `
+kubectl apply -f k8s/namespace.yaml; `
+kubectl apply -n microservices -f k8s/auth; `
+kubectl apply -n microservices -f k8s/order; `
+kubectl apply -n microservices -f k8s/cocktail; `
+kubectl apply -n microservices -f k8s/frontend; `
+kubectl apply -n microservices -f k8s/ingress; `
+kubectl get pods -n microservices; `
+kubectl get ingress -n microservices -o wide
+```
+
+Puis, dans un deuxieme terminal, lancer le tunnel :
+
+```powershell
+& 'C:\Program Files\Kubernetes\Minikube\minikube.exe' tunnel
+```
+
+Ensuite, ajouter dans le fichier hosts Windows :
+
+```text
+127.0.0.1 devops.local
+```
+
+URL locale finale : `http://devops.local`
+
 ### 5.1 Construire et pousser les images
 
 ```powershell
